@@ -1,14 +1,29 @@
 services:
+# Aplicação PHP 8.4 com Apache
+  php-app:
+    image: php:8.4-apache
+    container_name: estoque_php_app
+    ports:
+      - "8000:80"
+    volumes:
+      - ./app:/var/www/html
+      - ./database:/var/www/database
+    # Ativa o mod_rewrite do Apache e garante permissão de escrita no SQLite para o www-data
+    command: >
+      sh -c "a2enmod rewrite && 
+             chmod -R 777 /var/www/database && 
+             apache2-foreground"
+    restart: unless-stopped
   # Serviço utilitário para criar/atualizar o banco via linha de comando
   sqlite-cli:
     image: keinos/sqlite3:latest
     container_name: estoque_sqlite_cli
+    user: root
     volumes:
       - ./database:/workspace
     working_dir: /workspace
-    # Cria o arquivo estoque.sqlite executando o schema.sql
-    command: ["sh", "-c", "sqlite3 /workspace/estoque.sqlite < /workspace/schema.sql && echo 'Banco SQLite inicializado com sucesso!'"]
-
+    entrypoint: ["sh", "-c"]
+    command: ["sqlite3 /workspace/estoque.sqlite < /workspace/schema.sql && echo 'Banco SQLite inicializado com sucesso!'"]
   # Interface Web leve para navegar no banco em http://localhost:8080
   sqlite-web:
     image: coleifer/sqlite-web:latest
