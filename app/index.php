@@ -210,7 +210,7 @@ $ultimasMovimentacoes = $pdo->query("
         <div class="card shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <span class="fw-bold">📦 Peças Expostas nas Lojas no Momento</span>
-                <a href="movimentacoes.php" class="btn btn-sm btn-primary">+ Nova Remessa / Baixa</a>
+                <a href="movimentacoes.php" class="btn btn-sm btn-outline-light">+ Nova Remessa / Baixa</a>
             </div>
             <div class="table-responsive">
                 <table class="table table-sm table-hover align-middle mb-0">

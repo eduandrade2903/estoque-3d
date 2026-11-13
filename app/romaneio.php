@@ -102,7 +102,7 @@ td code {
 
 <?php if ($lojaSelecionada): ?>
     <!-- DOCUMENTO DE ROMANEIO (Área de Impressão) -->
-    <div class="card shadow-sm p-4 bg-white">
+    <div class="card shadow-sm p-4 bg-white" style="background-color: #ffffff !important; color: #212529 !important;">
         <!-- Cabeçalho do Recibo -->
         <div class="text-center border-bottom pb-4 mb-4">
             <h3 class="fw-bold text-dark">🖨️ TERMO DE REMESSA E CONSIGNAÇÃO DE PEÇAS</h3>
