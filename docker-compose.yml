@@ -1,0 +1,24 @@
+services:
+  # Serviço utilitário para criar/atualizar o banco via linha de comando
+  sqlite-cli:
+    image: keinos/sqlite3:latest
+    container_name: estoque_sqlite_cli
+    volumes:
+      - ./database:/workspace
+    working_dir: /workspace
+    # Cria o arquivo estoque.sqlite executando o schema.sql
+    command: ["sh", "-c", "sqlite3 /workspace/estoque.sqlite < /workspace/schema.sql && echo 'Banco SQLite inicializado com sucesso!'"]
+
+  # Interface Web leve para navegar no banco em http://localhost:8080
+  sqlite-web:
+    image: coleifer/sqlite-web:latest
+    container_name: estoque_sqlite_web
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./database:/data
+    environment:
+      - SQLITE_DATABASE=estoque.sqlite
+    depends_on:
+      - sqlite-cli
+    restart: unless-stopped

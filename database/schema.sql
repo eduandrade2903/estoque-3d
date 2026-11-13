@@ -96,3 +96,35 @@ CREATE TABLE IF NOT EXISTS itens_inventario (
 -- TRIGGERS AUTOMÁTICAS DE ATUALIZAÇÃO DE SALDO
 
 -- Quando houver local_origem_id preenchido, desconta o saldo da origem
+CREATE TRIGGER IF NOT EXISTS trg_movimentacao_saida
+AFTER INSERT ON movimentacoes
+WHEN NEW.local_origem_id IS NOT NULL
+BEGIN
+    INSERT INTO SALDOS_ESTOQUE (produtoid, local_id, quantidade, atualizado_em)
+    VALUES (NEW.produto_id, NEW.local_origem_id, -NEW.quantidade, CURRENT_TIMESTAMP)
+    ON CONFLICT(produto_id, local_id) DO UPDATE SET
+        quantidade = quantidade - NEW.quantidade,
+        atualizado_em = CURRENT_TIMESTAMP;
+END;
+
+-- Quando houver local_destino_id preenchido, soma o saldo do destino
+CREATE TRIGGER IF NOT EXISTS trg_movimentacao_entrada
+AFTER INSERT ON movimentacoes
+WHEN NEW.local_destino_id IS NOT NULL
+BEGIN
+    INSERT INTO saldos_estoque (produto_id, local_id, quantidade, atualizado_em),
+    VALUES (NEW.produto_id, NEW.local_origem_id, -NEW.quantidade, CURRENT_TIMESTAMP)
+    ON CONFLICT(produto_id, local_id) DO UPDATE SET
+        quantidade = quantidade - NEW.quantidade,
+        atualizado_em = CURRENT_TIMESTAMP;
+END;
+
+-- dados iniciais para testes
+INSERT OR IGNORE INTO tipos_produto (id, nome, descricao) VALUES
+    (1, 'Matéria-Prima 3D', 'Filamentos, resinas, álcool isopropílico e insumos'),
+    (2, 'Produto Acabado', 'Peças impressas prontas para venda'),
+    (3, 'Componentes / Outros', 'Ímãs, argolas de chaveiro, parafusos, embalagens');
+
+INSERT OR IGNORE INTO locais_clientes (id, nome, tipo, comissao_percentual, observacoes) VALUES
+    (1, 'Oficina Principal (Casa)', 'INTERNO', 0.0, 'Estoque físico principal'),
+    (2, 'Loja Geek Center', 'LOJA_PARCEIRA', 20.0, 'Consignado - Acerto todo dia 10');
